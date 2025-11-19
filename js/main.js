@@ -104,3 +104,78 @@ function removeButtonListeners() {
 
     return buttons;
 }
+
+// 8
+function createComments(comments) {
+  if (!comments) return undefined;
+
+  const fragment = document.createDocumentFragment();
+
+  for (const comment of comments) {
+  
+    const article = document.createElement("article");
+    const h3 = createElemWithText("h3", comment.name);
+    const pBody = createElemWithText("p", comment.body);
+    const pEmail = createElemWithText("p", `From: ${comment.email}`);
+
+    article.append(h3, pBody, pEmail);
+    fragment.append(article);
+  }
+
+  return fragment;
+}
+
+// 9
+function populateSelectMenu(users) {
+  if (!users) return undefined;
+
+  const selectMenu = document.getElementById("selectMenu");
+  const options = createSelectOptions(users);
+
+  for (const option of options) {
+    selectMenu.append(option);
+  }
+
+  return selectMenu;
+}
+
+// 10
+async function getUsers() {
+  
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/users");
+    return await response.json();
+  } 
+  
+  catch (error) {
+    console.error("Error fetching users:", error);
+  }
+}
+
+// 11
+async function getUserPosts(userId) {
+  if (!userId) return undefined;
+
+  try {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}/posts`);
+    return await response.json();
+  } 
+  
+  catch (error) {
+    console.error("Error fetching user posts:", error);
+  }
+}
+
+// 12
+async function getUser(userId) {
+  if (!userId) return undefined;
+
+  try {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+    return await response.json();
+  } 
+  
+  catch (error) {
+    console.error("Error fetching user:", error);
+  }
+}
