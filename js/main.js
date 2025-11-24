@@ -179,3 +179,85 @@ async function getUser(userId) {
     console.error("Error fetching user:", error);
   }
 }
+
+// 13
+async function getPostComments(postId) {
+  if (!postId) return undefined;
+
+  try {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`);
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching post comments:", error);
+  }
+}
+
+// 14
+async function displayComments(postId) {
+  if (!postId) return undefined;
+
+  const section = document.createElement("section");
+  section.dataset.postId = postId;
+  section.classList.add("comments", "hide");
+
+  const comments = await getPostComments(postId);
+  const fragment = createComments(comments);
+
+  section.append(fragment);
+
+  return section;
+}
+
+// 15
+async function createPosts(posts) {
+  if (!posts) return undefined;
+
+  const fragment = document.createDocumentFragment();
+
+  for (const post of posts) {
+    const article = document.createElement("article");
+
+    const h2 = createElemWithText("h2", post.title);
+    const pBody = createElemWithText("p", post.body);
+    const pId = createElemWithText("p", `Post ID: ${post.id}`);
+
+    const author = await getUser(post.userId);
+    const pAuthor = createElemWithText("p", `Author: ${author.name} with ${author.company.name}`);
+    const pCatch = createElemWithText("p", author.company.catchPhrase);
+
+    const button = createElemWithText("button", "Show Comments");
+    button.dataset.postId = post.id;
+
+    const section = await displayComments(post.id);
+
+    article.append(h2, pBody, pId, pAuthor, pCatch, button, section);
+    fragment.append(article);
+  }
+
+  return fragment;
+}
+
+// 16
+async function displayPosts(posts) {
+  const main = document.querySelector("main");
+
+  const element = posts
+    ? await createPosts(posts)
+    : createElemWithText("p", "Select an Employee to display their posts.", "default-text");
+
+  main.append(element);
+  return element;
+}
+
+// 17
+function toggleComments(event, postId) {
+  if (!event || !postId) return undefined;
+
+  event.target.listener = true;
+
+  const section = toggleCommentSection(postId);
+  const button = toggleCommentButton(postId);
+
+  return [section, button];
+}
+
