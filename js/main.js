@@ -261,3 +261,64 @@ function toggleComments(event, postId) {
   return [section, button];
 }
 
+// 18
+async function refreshPosts(posts) {
+  if (!posts) return undefined;
+
+  const removeButtons = removeButtonListeners();
+  const main = deleteChildElements(document.querySelector("main"));
+  const fragment = await displayPosts(posts);
+  const addButtons = addButtonListeners();
+
+  return [removeButtons, main, fragment, addButtons];
+}
+
+// 19 
+async function selectMenuChangeEventHandler(event) {
+  if (!event || !event.target) return undefined;
+
+  const selectMenu = event.target;
+
+  selectMenu.disabled = true;
+
+  try {
+    const userId = Number.parseInt(selectMenu.value, 10) || 1;
+
+    let posts = await getUserPosts(userId);
+    if (!Array.isArray(posts)) posts = [];
+
+    let refreshPostsArray = await refreshPosts(posts);
+    if (!Array.isArray(refreshPostsArray)) refreshPostsArray = [];
+
+    return [userId, posts, refreshPostsArray];
+  } catch (err) {
+    console.error("selectMenuChangeEventHandler error:", err);
+
+    const userId = Number.parseInt(selectMenu.value, 10) || 1;
+    return [userId, [], []];
+  } finally {
+    selectMenu.disabled = false;
+  }
+}
+
+
+// 20 
+async function initPage() {
+  const users = await getUsers();
+
+  const select = populateSelectMenu(users);
+
+  return [users, select];
+}
+
+// 21
+function initApp() {
+  initPage();
+
+  const selectMenu = document.getElementById("selectMenu");
+
+  selectMenu.addEventListener("change", selectMenuChangeEventHandler);
+}
+
+// run app
+document.addEventListener("DOMContentLoaded", initApp);
